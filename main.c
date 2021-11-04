@@ -21,6 +21,7 @@ typedef struct Lecture_info {
 }LECTURE;
 
 typedef struct Student_info {
+	char job[20];
 	char id[40];
 	char pw[40];
 	int lecture_point;
@@ -30,6 +31,7 @@ typedef struct Student_info {
 }STUDENT;
 
 typedef struct Professor_info {
+	char job[20];
 	char id[40];
 	char pw[40];
 	PERSON profile;
@@ -40,7 +42,8 @@ typedef struct Professor_info {
 int cmd;
 int cnt_stu = 0;
 int cnt_prof = 0;
-int state = true;
+int init_state = true;
+int main_state = false;
 int chk_login = false;
 
 STUDENT stu_arr[50] = { 0 };		// 학생 회원 목록
@@ -56,11 +59,13 @@ void login_professor(char*, char*);
 void select_cmd(int);
 void __init__();
 void __main__();
+void __main__Professor();
+void cmd_main_Profesor(int);
 
 void __init__() {
-	while (state) {
+	while (init_state) {
 		printf("\n\n   < 한남대학교 수강신청 통합포탈 >		\n\n");
-		printf(" (1)	회원가입 \n (2)	로그인 (학생) \n (3)	로그인 (교수)\n (4)	종료\n");
+		printf(" (1)	회원가입 \n (2)	로그인 \n (3)	종료\n");
 		printf("명령어를 입력해주세요 >> ");
 		scanf_s("%d", &cmd);
 		printf("\n\n");
@@ -74,47 +79,42 @@ void select_cmd(int c) {
 	char ent_pw[40];
 
 	switch (c) {
-	case 1:
-		printf("▶ (1) 학생 회원가입\n (2) 교수 회원가입\n >>>"); scanf_s("%d", &cmd);
+		case 1:
+			printf("▶ (1) 학생 회원가입		(2) 교수 회원가입\n >>>"); scanf_s("%d", &cmd);
 
-		if (cmd == 1) {
-			stu_arr[cnt_stu] = signUp_student();
-			cnt_stu++;
-		}
-		else if (cmd == 2) {
-			prof_arr[cnt_prof] = signUp_professor();
-			cnt_prof++;
-		}
-		break;
-
-	case 2:
-
-		printf("▶ (1) 학생 로그인	(2) 교수 로그인\n >>> "); scanf_s("%d", &cmd);
-
-		printf("▶ ID : "); scanf_s("%s", ent_id, sizeof(ent_id));
-		printf("▶ PW : "); scanf_s("%s", ent_pw, sizeof(ent_pw));
-
-		if (cmd == 1) login_student(ent_id, ent_pw);
-		else if (cmd == 2) login_professor(ent_id, ent_pw);
-
-		// login에 성공하여 chk_login이 true가 되면 메인 기능 실행 
-
-		if (chk_login == true) {
-			// 메인 실행 
-			__main__();
-		}
-		break;
-
-		/*case 3 :
-			login_professor();
+			if (cmd == 1) {
+				stu_arr[cnt_stu] = signUp_student();
+				cnt_stu++;
+			}
+			else if (cmd == 2) {
+				prof_arr[cnt_prof] = signUp_professor();
+				cnt_prof++;
+			}
 			break;
-		*/
-	case 4:
-		state = false;
-		break;
 
-	default:
-		printf("명령어를 다시 입력해주세요.\n");
+		case 2:
+
+			printf("▶ (1) 학생 로그인	(2) 교수 로그인\n >>> "); scanf_s("%d", &cmd);
+
+			printf("▶ ID : "); scanf_s("%s", ent_id, sizeof(ent_id));
+			printf("▶ PW : "); scanf_s("%s", ent_pw, sizeof(ent_pw));
+
+			if (cmd == 1) login_student(ent_id, ent_pw);
+			else if (cmd == 2) login_professor(ent_id, ent_pw);
+
+			// login에 성공하여 chk_login이 true가 되면 메인 기능 실행 
+			//if (chk_login == true) {
+			//	// 메인 실행 
+			//	__main__();
+			//}
+			break;
+
+		case 3:
+			init_state = false;
+			break;
+
+		default:
+			printf("명령어를 다시 입력해주세요.\n");
 	}
 
 }
@@ -126,7 +126,7 @@ void print_Student(STUDENT s) {
 
 STUDENT signUp_student() {
 
-	printf("===== 회원가입 (학생) =====\n");
+	printf("〓〓〓〓〓 회원가입 (학생) 〓〓〓〓〓\n");
 
 	STUDENT stu = { 0 };
 
@@ -135,7 +135,7 @@ STUDENT signUp_student() {
 	printf("▶ 이름 : "); scanf_s("%s", stu.profile.name, sizeof(stu.profile.name));
 	printf("▶ 나이 : "); scanf_s("%d", &stu.profile.age);
 	printf("▶ 전화번호 : "); scanf_s("%s", stu.profile.phone_number, sizeof(stu.profile.phone_number));
-
+	
 	printf("\n\n★ 회원가입 성공!\n");
 	print_Student(stu);
 
@@ -144,7 +144,7 @@ STUDENT signUp_student() {
 
 PROFESSOR signUp_professor() {
 
-	printf("===== 회원가입 (교수) =====\n");
+	printf("〓〓〓〓〓 회원가입 (교수) 〓〓〓〓〓\n");
 
 	PROFESSOR prof = { 0 };
 
@@ -159,14 +159,15 @@ PROFESSOR signUp_professor() {
 
 void login_student(char* ent_id, char* ent_pw) {
 
-	printf("===== 로그인 (학생) =====\n");
+	printf("〓〓〓〓〓 로그인 (학생) 〓〓〓〓〓\n");
 
 	for (int i = 0; i < cnt_stu; i++) {
 		if (strcmp(stu_arr[i].id, ent_id) == 0) {
 			// pw 확인
 			if (strcmp(stu_arr[i].pw, ent_pw) == 0) {
 				user_student = stu_arr[i];		// 로그인 성공 
-				chk_login = true;
+				chk_login = true;		//  __main__Student() 실행 
+				main_state = true;
 				printf("★ 로그인 성공 : %s\n", user_student.profile.name);
 			}
 			else printf("▶ 비밀번호가 일치하지 않습니다. \n");		// 비밀번호 오류
@@ -178,15 +179,17 @@ void login_student(char* ent_id, char* ent_pw) {
 
 void login_professor(char* ent_id, char* ent_pw) {
 
-	printf("===== 로그인 (교수) =====\n");
+	printf("〓〓〓〓〓 로그인 (교수) 〓〓〓〓〓\n");
 
 	for (int i = 0; i < cnt_prof; i++) {
 		if (strcmp(prof_arr[i].id, ent_id) == 0) {
 
 			if (strcmp(prof_arr[i].pw, ent_pw) == 0) {
 				user_professor = prof_arr[i];		// 로그인 성공 
-				chk_login = true;
+				//chk_login = true;		// __main__Professor() 실행 
+				main_state = true;
 				printf("★ 로그인 성공 : %s\n", user_professor.profile.name);
+				__main__Professor();
 			}
 			else printf("▶ 비밀번호가 일치하지 않습니다. \n");		// 비밀번호 오류
 			break;
@@ -195,10 +198,42 @@ void login_professor(char* ent_id, char* ent_pw) {
 
 }
 
+void __main__Professor() {
+	while(main_state) {
+		printf("▶ 사용자 : %s (%s) \n\n", user_professor.profile.name, user_professor.id);
+		printf("	1 .		강의 등록\n	2 .		강의 수정\n	3 .		로그아웃 \n >>> ");
+		scanf_s("%d", &cmd);
+		cmd_main_Profesor(cmd);
+	}
+}
+
+void cmd_main_Profesor(int c) {
+
+	switch (c) {
+		case 1 :
+			// upload_lecture_info()
+			break;
+
+		case 2 : 
+			// update_lecture_info()
+			break;
+
+		case 3 : 
+			printf("◎ 로그아웃 \n");
+			main_state = false;
+			break;
+
+		default : 
+			printf("※ 명령어를 다시 입력해주세요 \n");
+	}
+}
+
 void __main__() {
-	printf("===== 수강신청 목록 =====\n");
+
+	while(main_state)
+	printf("〓〓〓〓〓 수강신청 목록 〓〓〓〓〓\n");
 	printf("");
-	printf("====================\n");
+	printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
 
 }
 
