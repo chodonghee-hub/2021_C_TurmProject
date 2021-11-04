@@ -10,12 +10,22 @@ typedef struct Person_info {
 	int age;
 }PERSON;
 
+typedef struct Lecture_info {
+	char major[20];
+	char serial[20];
+	char title[20];
+	char profesor[20];
+	int point;
+	char time[20];
+	int member;
+}LECTURE;
+
 typedef struct Student_info {
 	char id[40];
 	char pw[40];
+	int lecture_point;
 	PERSON profile;
-
-	// 수강 목록 기능 추가 
+	LECTURE lecture_arr[10];		// 수강과목 배열
 
 }STUDENT;
 
@@ -23,8 +33,7 @@ typedef struct Professor_info {
 	char id[40];
 	char pw[40];
 	PERSON profile;
-
-	// 수업 하는 과목 목록 기능 추가 
+	LECTURE lecture_arr[10];		// 수업 하는 과목 목록 기능 추가 
 
 }PROFESSOR;
 
