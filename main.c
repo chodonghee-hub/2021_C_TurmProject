@@ -223,6 +223,13 @@ void cmd_main_Profesor(int c) {
 	}
 }
 
+void upload_lecture_info() {
+	LECTURE lec = { 0 };
+	printf(" ▶ 학과	"); scanf_s("%s", lec.major, sizeof(lec.major));
+	printf(" ▶ 학수번호	"); scanf_s("%s", lec.serial, sizeof(lec.serial));
+
+}
+
 void __main__Student() {
 
 	while(main_state){
