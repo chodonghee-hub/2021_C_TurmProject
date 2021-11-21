@@ -67,6 +67,7 @@ void __main__Professor();
 void cmd_main_Profesor(int);
 void update_lecture();
 void do_update_lecture_info(LECTURE*);
+LECTURE upload_lecture_info();
 
 void __init__() {
 	while (init_state) {
@@ -217,7 +218,7 @@ void cmd_main_Profesor(int c) {
 			break;
 
 		case 2 : 
-			// update_lecture_info()
+			update_lecture();
 			break;
 
 		case 3 : 
@@ -235,18 +236,17 @@ LECTURE upload_lecture_info() {
 	printf(" ▶ 학과	"); scanf_s("%s", lec.major, sizeof(lec.major));
 	printf(" ▶ 학수번호	"); scanf_s("%s", lec.serial, sizeof(lec.serial));
 	printf(" ▶ 강의명	"); scanf_s("%s", lec.title, sizeof(lec.title));
-	printf(" ▶ 강의명	"); scanf_s("%s", lec.title, sizeof(lec.title));
 	printf(" ▶ 교수명	"); scanf_s("%s", lec.professor, sizeof(lec.professor));
-	printf(" ▶ 학점	"); scanf_s("%d", lec.point);
+	printf(" ▶ 학점	"); scanf_s("%d", &lec.point);
 	printf(" ▶ 시간	"); scanf_s("%s", lec.time, sizeof(lec.time));
-	printf(" ▶ 수강인원	"); scanf_s("%d", lec.member);
+	printf(" ▶ 수강인원	"); scanf_s("%d", &lec.member);
 	return lec;
 }
 
 void update_lecture() {
 	bool chk_update = false;
 	int num;
-	printf(" ▶ 학수번호 조회	"); scanf_s("%d", num);
+	printf(" ▶ 학수번호 조회	"); scanf_s("%d", &num);
 
 	for (int i = 0; i < lec_num; i++) {
 		if (num == i) {
@@ -260,9 +260,9 @@ void update_lecture() {
 }
 
 void do_update_lecture_info(LECTURE* lec) {
-	printf(" ▶ 학점	"); scanf_s("%d", lec->point);
+	printf(" ▶ 학점	"); scanf_s("%d", &(lec->point));
 	printf(" ▶ 시간	"); scanf_s("%s", lec->time, sizeof(lec->time));
-	printf(" ▶ 수강인원	"); scanf_s("%d", lec->member);
+	printf(" ▶ 수강인원	"); scanf_s("%d", &(lec->member));
 }
 
 void __main__Student() {
