@@ -14,7 +14,7 @@ typedef struct Lecture_info {
 	char major[20];
 	char serial[20];
 	char title[20];
-	char profesor[20];
+	char professor[20];
 	int point;
 	char time[20];
 	int member;
@@ -223,11 +223,17 @@ void cmd_main_Profesor(int c) {
 	}
 }
 
-void upload_lecture_info() {
+LECTURE upload_lecture_info() {
 	LECTURE lec = { 0 };
 	printf(" ▶ 학과	"); scanf_s("%s", lec.major, sizeof(lec.major));
 	printf(" ▶ 학수번호	"); scanf_s("%s", lec.serial, sizeof(lec.serial));
-
+	printf(" ▶ 강의명	"); scanf_s("%s", lec.title, sizeof(lec.title));
+	printf(" ▶ 강의명	"); scanf_s("%s", lec.title, sizeof(lec.title));
+	printf(" ▶ 교수명	"); scanf_s("%s", lec.professor, sizeof(lec.professor));
+	printf(" ▶ 학점	"); scanf_s("%d", lec.point, sizeof(lec.point));
+	printf(" ▶ 시간	"); scanf_s("%s", lec.time, sizeof(lec.time));
+	printf(" ▶ 수강인원	"); scanf_s("%d", lec.member, sizeof(lec.member));
+	return lec;
 }
 
 void __main__Student() {
