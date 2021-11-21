@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
 #define true 1
 #define false 0
 
@@ -45,9 +47,11 @@ int cnt_prof = 0;
 int init_state = true;
 int main_state = false;
 int chk_login = false;
+int lec_num = 0;
 
 STUDENT stu_arr[50] = { 0 };		// 학생 회원 목록
 PROFESSOR prof_arr[50] = { 0 };	// 교수 회원 목록
+LECTURE lec_arr[50] = { 0 };			// 과목 리스트 
 
 STUDENT user_student = { 0 };			// 로그인시 학생 유저 
 PROFESSOR user_professor = { 0 };	// 로그인시 교수 유저 
@@ -61,6 +65,8 @@ void __init__();
 void __main__Student();
 void __main__Professor();
 void cmd_main_Profesor(int);
+void update_lecture();
+void do_update_lecture_info(LECTURE*);
 
 void __init__() {
 	while (init_state) {
@@ -206,7 +212,8 @@ void cmd_main_Profesor(int c) {
 
 	switch (c) {
 		case 1 :
-			// upload_lecture_info()
+			lec_arr[lec_num] = upload_lecture_info();
+			lec_num += 1;
 			break;
 
 		case 2 : 
@@ -230,10 +237,32 @@ LECTURE upload_lecture_info() {
 	printf(" ▶ 강의명	"); scanf_s("%s", lec.title, sizeof(lec.title));
 	printf(" ▶ 강의명	"); scanf_s("%s", lec.title, sizeof(lec.title));
 	printf(" ▶ 교수명	"); scanf_s("%s", lec.professor, sizeof(lec.professor));
-	printf(" ▶ 학점	"); scanf_s("%d", lec.point, sizeof(lec.point));
+	printf(" ▶ 학점	"); scanf_s("%d", lec.point);
 	printf(" ▶ 시간	"); scanf_s("%s", lec.time, sizeof(lec.time));
-	printf(" ▶ 수강인원	"); scanf_s("%d", lec.member, sizeof(lec.member));
+	printf(" ▶ 수강인원	"); scanf_s("%d", lec.member);
 	return lec;
+}
+
+void update_lecture() {
+	bool chk_update = false;
+	int num;
+	printf(" ▶ 학수번호 조회	"); scanf_s("%d", num);
+
+	for (int i = 0; i < lec_num; i++) {
+		if (num == i) {
+			do_update_lecture_info(lec_arr + num);
+			chk_update = true;
+		}
+	} 
+
+	if (chk_update) printf("	※ 수정 완료 \n");
+	else printf("	※ 자료를 찾지 못하였습니다. \n");
+}
+
+void do_update_lecture_info(LECTURE* lec) {
+	printf(" ▶ 학점	"); scanf_s("%d", lec->point);
+	printf(" ▶ 시간	"); scanf_s("%s", lec->time, sizeof(lec->time));
+	printf(" ▶ 수강인원	"); scanf_s("%d", lec->member);
 }
 
 void __main__Student() {
