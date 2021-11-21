@@ -68,6 +68,7 @@ void cmd_main_Profesor(int);
 void update_lecture();
 void do_update_lecture_info(LECTURE*);
 LECTURE upload_lecture_info();
+void cmd_main_Student(int);
 
 void __init__() {
 	while (init_state) {
@@ -232,6 +233,7 @@ void cmd_main_Profesor(int c) {
 }
 
 LECTURE upload_lecture_info() {
+	printf("〓〓〓〓〓 강의 등록 〓〓〓〓〓\n");
 	LECTURE lec = { 0 };
 	printf(" ▶ 학과	"); scanf_s("%s", lec.major, sizeof(lec.major));
 	printf(" ▶ 학수번호	"); scanf_s("%s", lec.serial, sizeof(lec.serial));
@@ -244,6 +246,7 @@ LECTURE upload_lecture_info() {
 }
 
 void update_lecture() {
+	printf("〓〓〓〓〓 강의 수정 〓〓〓〓〓\n");
 	bool chk_update = false;
 	int num;
 	printf(" ▶ 학수번호 조회	"); scanf_s("%d", &num);
@@ -269,9 +272,15 @@ void __main__Student() {
 
 	while(main_state){
 		printf("〓〓〓〓〓 수강신청 목록 〓〓〓〓〓\n");
-		printf("");
+		printf("	1 .		수강 조회\n	2 .		수강 신청\n	3 .		장바구니 \n >>> ");
+		scanf_s("%d", &cmd);
+		cmd_main_Student(cmd);
 		printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
 	}
+}
+
+void cmd_main_Student(int cmd) {
+
 }
 
 int main(void) {
