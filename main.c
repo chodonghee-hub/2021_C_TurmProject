@@ -69,6 +69,8 @@ void update_lecture();
 void do_update_lecture_info(LECTURE*);
 LECTURE upload_lecture_info();
 void cmd_main_Student(int);
+void print_format_lec_info(LECTURE);
+void search_lecture_list();
 
 void __init__() {
 	while (init_state) {
@@ -282,7 +284,7 @@ void __main__Student() {
 void cmd_main_Student(int c) {
 	switch (c) {
 		case 1: 
-			// 
+			search_lecture_list();
 			break;
 
 		case 2 : 
@@ -301,6 +303,14 @@ void cmd_main_Student(int c) {
 		default :
 			printf("명령어를 다시 입력해주세요.\n");
 	}
+}
+
+void print_format_lec_info(LECTURE lec) {
+	printf("%-20s%-10s%-20s%-10s%-5d%-20s%-5d\n", lec.major, lec.serial, lec.title, lec.professor, lec.point, lec.time, lec.member);	
+}
+
+void search_lecture_list() {
+	for (int i = 0; i < lec_num; i++) print_format_lec_info(lec_arr[i]);
 }
 
 int main(void) {
