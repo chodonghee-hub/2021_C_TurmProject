@@ -272,15 +272,35 @@ void __main__Student() {
 
 	while(main_state){
 		printf("〓〓〓〓〓 수강신청 목록 〓〓〓〓〓\n");
-		printf("	1 .		수강 조회\n	2 .		수강 신청\n	3 .		장바구니 \n >>> ");
+		printf("	1 .		수강 조회\n	2 .		수강 신청\n	3 .		장바구니\n	4. 로그아웃 \n >>> ");
 		scanf_s("%d", &cmd);
 		cmd_main_Student(cmd);
 		printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
 	}
 }
 
-void cmd_main_Student(int cmd) {
+void cmd_main_Student(int c) {
+	switch (c) {
+		case 1: 
+			// 
+			break;
 
+		case 2 : 
+			//
+			break;
+		
+		case 3 :
+			//
+			break;
+		
+		case 4 : 
+			printf("◎ 로그아웃 \n");
+			main_state = false;
+			break;
+
+		default :
+			printf("명령어를 다시 입력해주세요.\n");
+	}
 }
 
 int main(void) {
