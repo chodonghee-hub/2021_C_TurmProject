@@ -26,6 +26,8 @@ typedef struct Student_info {
 	int lecture_point;
 	PERSON profile;
 	LECTURE lecture_arr[10];		// 수강과목 배열
+	char* lec_serial_arr[10];			// 수강과목 학수번호 목록 
+	int cnt_my_lec;
 }STUDENT;
 typedef struct Professor_info {
 	char major[20];
@@ -67,7 +69,11 @@ void print_lec_list();
 int is_my_lec_Professor(LECTURE*);
 bool chk_id_in_stuArr(char[20]);
 bool chk_id_in_profArr(char[20]);
-bool chk_lec_in_lecArr(LECTURE*);
+bool chk_lec_in_lecArr(char[20]);
+void do_select_lecture();
+bool chk_lec_in_mine(char[20]);
+LECTURE get_lecture_info(char[20]);
+void print_my_lecture_list();
 
 void __init__() {
 	while (init_state) {
@@ -203,7 +209,7 @@ void login_professor(char* ent_id, char* ent_pw) {
 }
 void __main__Professor() {
 	while (main_state) {
-		printf("\n▶ 사용자 : %s (%s) \n\n", user_professor.profile.name, user_professor.id);
+		printf("\n ▶ 사용자 : %s (%s) \n\n", user_professor.profile.name, user_professor.id);
 
 		printf("%69s\n", "■■ 전체 과목 조회 ■■");
 		print_lec_list();
@@ -247,7 +253,7 @@ int is_my_lec_Professor(LECTURE* lec) {
 
 void do_upload_lecture() {
 	LECTURE tmp_lec = upload_lecture_info();
-	if (chk_lec_in_lecArr(&tmp_lec)) {
+	if (chk_lec_in_lecArr(tmp_lec.serial)) {
 		lec_arr[lec_num] = tmp_lec;
 		lec_num += 1;
 		printf("\n● 강의 등록 성공\n");
@@ -268,9 +274,9 @@ LECTURE upload_lecture_info() {
 	return lec;
 }
 
-bool chk_lec_in_lecArr(LECTURE* lec) {
+bool chk_lec_in_lecArr(char ent_serial[20]) {
 	for (int i = 0; i < lec_num; i++) {
-		if (strcmp(lec_arr[i].serial, lec->serial) == 0) return false;
+		if (strcmp(lec_arr[i].serial, ent_serial) == 0) return false;
 	}return true;
 }
 
@@ -306,25 +312,25 @@ void do_update_lecture_info(LECTURE* lec) {
 
 void __main__Student() {
 	while (main_state) {
-		printf("\n▶ 사용자 : %s (%s) \n\n", user_student.profile.name, user_student.id);
-		rintf("%69s\n", "■■ 전체 과목 조회 ■■");
+		printf("\n ▶ 사용자 : %s (%s) \n\n", user_student.profile.name, user_student.id);
+		printf("%69s\n", "■■ 전체 과목 조회 ■■");
 
 		print_lec_list();
 		printf("	1 .		수강 신청\n	2 .		장바구니\n	3 .		로그아웃 \n >>> ");
 		scanf_s("%d", &cmd);
 		cmd_main_Student(cmd);
-		printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
 	}
 }
 
 void cmd_main_Student(int c) {
 	switch (c) {
 	case 1:
-		//search_lecture_list();
+		do_select_lecture();
 		break;
 
 	case 2:
-		//
+		print_my_lecture_list();
+		// 기능 추가 
 		break;
 
 	case 3:
@@ -335,6 +341,44 @@ void cmd_main_Student(int c) {
 	default:
 		printf("명령어를 다시 입력해주세요.\n");
 	}
+}
+
+void do_select_lecture() {
+	char ent_serial[20];
+	printf(" ▶ 수강 희망 과목 학수번호 입력 >>> "); scanf_s("%s", ent_serial, sizeof(ent_serial));
+	if (!chk_lec_in_lecArr(ent_serial)) {
+		if (chk_lec_in_mine(ent_serial)) {
+			user_student.lec_serial_arr[user_student.cnt_my_lec] = ent_serial;
+			user_student.cnt_my_lec++;
+			printf("● 학수번호 : %s 추가 \n", ent_serial);
+		}
+		else printf("○ 이미 수강신청된 과목 입니다.  \n");
+	}
+}
+
+bool chk_lec_in_mine(char ent_serial[20]) {
+	for (int i = 0; i < user_student.cnt_my_lec; i++)
+		if (strncmp(user_student.lec_serial_arr[i], ent_serial, sizeof(user_student.lec_serial_arr[i])) == 0) return false;
+	return true;
+}
+
+LECTURE get_lecture_info(char serial[20]) {
+	for (int i = 0; i < lec_num; i++) {
+		if (strncmp(lec_arr[lec_num].serial, serial, sizeof(lec_arr[lec_num])) == 0)
+			return lec_arr[i];
+	}
+}
+
+void print_my_lecture_list() {
+	printf("%69s\n", "■■■  장바구니  ■■■");
+	printf("\n\n%13s%15s%15s%10s%15s%10s%15s%20s\n", "학과", "학수번호", "강의명", "교수", "학점", "시간", "수강인원", "수강성공확률");
+	printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
+	LECTURE tmp_lec = { 0 };
+	for (int i = 0; i < user_student.cnt_my_lec; i++) {
+		tmp_lec = get_lecture_info(user_student.lec_serial_arr[i]);
+		printForamt_lecture(&tmp_lec);
+	}
+	printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
 }
 
 int main(void) {
