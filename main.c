@@ -17,6 +17,7 @@ typedef struct Lecture_info {
 	int point;
 	char time[20];
 	int member;
+	double succuss_rate;
 }LECTURE;
 typedef struct Student_info {
 	char major[20];
@@ -45,8 +46,10 @@ PROFESSOR prof_arr[50] = { 0 };	// 교수 회원 목록
 LECTURE lec_arr[50] = { 0 };			// 과목 리스트 
 STUDENT user_student = { 0 };			// 로그인시 학생 유저 
 PROFESSOR user_professor = { 0 };	// 로그인시 교수 유저 
-STUDENT signUp_student();
-PROFESSOR signUp_professor();
+void do_signUp_student();
+void do_signUp_professor();
+STUDENT signUp_info_student();
+PROFESSOR signUp_info_professor();
 void login_student(char*, char*);
 void login_professor(char*, char*);
 void select_cmd(int);
@@ -56,13 +59,15 @@ void __main__Professor();
 void cmd_main_Profesor(int);
 void update_lecture();
 void do_update_lecture_info(LECTURE*);
+void do_upload_lecture();
 LECTURE upload_lecture_info();
 void cmd_main_Student(int);
-void print_format_lec_info(LECTURE);
-void search_lecture_list();
 void printFormat_lecture(LECTURE*);
 void print_lec_list();
 int is_my_lec_Professor(LECTURE*);
+bool chk_id_in_stuArr(char[20]);
+bool chk_id_in_profArr(char[20]);
+bool chk_lec_in_lecArr(LECTURE*);
 
 void __init__() {
 	while (init_state) {
@@ -80,14 +85,8 @@ void select_cmd(int c) {
 	switch (c) {
 	case 1:
 		printf("▶ (1) 학생 회원가입		(2) 교수 회원가입\n >>>"); scanf_s("%d", &cmd);
-		if (cmd == 1) {
-			stu_arr[cnt_stu] = signUp_student();
-			cnt_stu++;
-		}
-		else if (cmd == 2) {
-			prof_arr[cnt_prof] = signUp_professor();
-			cnt_prof++;
-		}
+		if (cmd == 1) do_signUp_student();
+		else if (cmd == 2) do_signUp_professor();
 		break;
 	case 2:
 		printf("▶ (1) 학생 로그인	(2) 교수 로그인\n >>> "); scanf_s("%d", &cmd);
@@ -103,12 +102,21 @@ void select_cmd(int c) {
 		printf("명령어를 다시 입력해주세요.\n");
 	}
 }
-void print_Student(STUDENT s) {
-	printf("** name : %s\n", s.profile.name);
-	printf("** age : %d\n", s.profile.age);
+
+void do_signUp_student() {
+	STUDENT tmp_stu = signUp_info_student();
+	if (chk_id_in_stuArr(tmp_stu.id)) {
+		stu_arr[cnt_stu] = tmp_stu;
+		cnt_stu++;
+		printf("\n\n★ 회원가입 성공!\n");
+		printf("** name : %s\n", tmp_stu.profile.name);
+		printf("** age : %d\n", tmp_stu.profile.age);
+	}
+	else printf("\n※ 회원가입 실패, 존재하는 아이디 입니다.\n\n");
 }
-STUDENT signUp_student() {
-	printf("〓〓〓〓〓 회원가입 (학생) 〓〓〓〓〓\n");
+
+STUDENT signUp_info_student() {
+	printf("\n〓〓〓〓〓 회원가입 (학생) 〓〓〓〓〓\n");
 	STUDENT stu = { 0 };
 	printf("▶ 학과 : "); scanf_s("%s", stu.major, sizeof(stu.major));
 	printf("▶ ID : "); scanf_s("%s", stu.id, sizeof(stu.id));
@@ -117,12 +125,31 @@ STUDENT signUp_student() {
 	printf("▶ 나이 : "); scanf_s("%d", &stu.profile.age);
 	printf("▶ 전화번호 : "); scanf_s("%s", stu.profile.phone_number, sizeof(stu.profile.phone_number));
 
-	printf("\n\n★ 회원가입 성공!\n");
-	print_Student(stu);
 	return stu;
 }
-PROFESSOR signUp_professor() {
-	printf("〓〓〓〓〓 회원가입 (교수) 〓〓〓〓〓\n");
+
+bool chk_id_in_stuArr(char ent_id[20]) {
+	for (int i = 0; i < cnt_stu; i++) {
+		if (strncmp(stu_arr[i].id, ent_id, sizeof(stu_arr[i])) == 0)
+			return false;
+	}
+	return true;
+}
+
+void do_signUp_professor() {
+	PROFESSOR tmp_prof = signUp_info_professor();
+	if (chk_id_in_profArr(tmp_prof.id)) {
+		prof_arr[cnt_prof] = tmp_prof;
+		cnt_prof++;
+		printf("\n\n★ 회원가입 성공!\n");
+		printf("** name : %s\n", tmp_prof.profile.name);
+		printf("** age : %d\n", tmp_prof.profile.age);
+	}
+	else printf("\n※ 회원가입 실패, 존재하는 아이디 입니다.\n\n");
+}
+
+PROFESSOR signUp_info_professor() {
+	printf("\n〓〓〓〓〓 회원가입 (교수) 〓〓〓〓〓\n");
 	PROFESSOR prof = { 0 };
 	printf("▶ 학과 : "); scanf_s("%s", prof.major, sizeof(prof.major));
 	printf("▶ ID : "); scanf_s("%s", prof.id, sizeof(prof.id));
@@ -132,8 +159,17 @@ PROFESSOR signUp_professor() {
 	printf("▶ 전화번호 : "); scanf_s("%s", prof.profile.phone_number, sizeof(prof.profile.phone_number));
 	return prof;
 }
+
+bool chk_id_in_profArr(char ent_id[20]) {
+	for (int i = 0; i < cnt_prof; i++) {
+		if (strncmp(prof_arr[i].id, ent_id, sizeof(prof_arr[i].id)) == 0)
+			return false;
+	}
+	return true;
+}
+
 void login_student(char* ent_id, char* ent_pw) {
-	printf("〓〓〓〓〓 로그인 (학생) 〓〓〓〓〓\n");
+	printf("\n〓〓〓〓〓 로그인 (학생) 〓〓〓〓〓\n");
 	for (int i = 0; i < cnt_stu; i++) {
 		if (strcmp(stu_arr[i].id, ent_id) == 0) {
 			// pw 확인
@@ -150,7 +186,7 @@ void login_student(char* ent_id, char* ent_pw) {
 	} if (chk_login == false) printf("▶ 로그인 실패 !");
 }
 void login_professor(char* ent_id, char* ent_pw) {
-	printf("〓〓〓〓〓 로그인 (교수) 〓〓〓〓〓\n");
+	printf("\n〓〓〓〓〓 로그인 (교수) 〓〓〓〓〓\n");
 	for (int i = 0; i < cnt_prof; i++) {
 		if (strcmp(prof_arr[i].id, ent_id) == 0) {
 			if (strcmp(prof_arr[i].pw, ent_pw) == 0) {
@@ -169,6 +205,7 @@ void __main__Professor() {
 	while (main_state) {
 		printf("\n▶ 사용자 : %s (%s) \n\n", user_professor.profile.name, user_professor.id);
 
+		printf("%69s\n", "■■ 전체 과목 조회 ■■");
 		print_lec_list();
 
 		printf("	1 .		강의 등록\n	2 .		강의 수정\n	3 .		로그아웃 \n >>> ");
@@ -179,8 +216,7 @@ void __main__Professor() {
 void cmd_main_Profesor(int c) {
 	switch (c) {
 	case 1:
-		lec_arr[lec_num] = upload_lecture_info();
-		lec_num += 1;
+		do_upload_lecture();
 		break;
 	case 2:
 		update_lecture();
@@ -195,48 +231,56 @@ void cmd_main_Profesor(int c) {
 }
 
 void printForamt_lecture(LECTURE* lec) {
-	//printf("%-5s%-15s%-15s%-15s%-10s%-5d%-10s%-5d\n", " ",lec->major, lec->serial, lec->title, lec->professor, lec->point, lec->time, lec->member);
-	printf("%15s%15s%15s%10s%15d%10s%15d\n", lec->major, lec->serial, lec->title, lec->professor, lec->point, lec->time, lec->member);
+	printf("%13s%15s%15s%10s%15d%10s%15d%20.1f\n", lec->major, lec->serial, lec->title, lec->professor, lec->point, lec->time, lec->member, lec->succuss_rate);
 }
 
 void print_lec_list() {
-	//printf("\n\n%-5s%-15s%-15s%-15s%-10s%-5s%-10s%-5s\n", " ","학과", "학수번호", "강의명", "교수", "학점", "시간", "수강인원");
-	printf("\n\n%15s%15s%15s%10s%15s%10s%15s\n", "학과", "학수번호", "강의명", "교수", "학점", "시간", "수강인원");
-	printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
-	for (int i = 0; i < lec_num; i++) {
-		printForamt_lecture(lec_arr + i);
-	}printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n\n\n");
+	printf("\n\n%13s%15s%15s%10s%15s%10s%15s%20s\n", "학과", "학수번호", "강의명", "교수", "학점", "시간", "수강인원", "수강성공확률");
+	printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
+	for (int i = 0; i < lec_num; i++) printForamt_lecture(lec_arr + i);
+	printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n\n\n");
 }
 
 int is_my_lec_Professor(LECTURE* lec) {
 	return strcmp(user_professor.profile.name, lec->professor);
 }
 
-LECTURE upload_lecture_info() {
-	printf("〓〓〓〓〓 강의 등록 〓〓〓〓〓\n");
-	LECTURE lec = { 0 };
-	//printf(" ▶ 학과	"); scanf_s("%s", lec.major, sizeof(lec.major));
-	strncpy_s(lec.major, sizeof(lec.major), user_professor.major, sizeof(user_professor.major));
+void do_upload_lecture() {
+	LECTURE tmp_lec = upload_lecture_info();
+	if (chk_lec_in_lecArr(&tmp_lec)) {
+		lec_arr[lec_num] = tmp_lec;
+		lec_num += 1;
+		printf("\n● 강의 등록 성공\n");
+	}
+	else printf("\n○ 강의 등록 실패, 동일한 학수번호 강좌가 존재 합니다.\n");
+}
 
+LECTURE upload_lecture_info() {
+	printf("\n〓〓〓〓〓 강의 등록 〓〓〓〓〓\n");
+	LECTURE lec = { 0 };
+	strncpy_s(lec.major, sizeof(lec.major), user_professor.major, sizeof(user_professor.major));
+	strncpy_s(lec.professor, sizeof(lec.professor), user_professor.profile.name, sizeof(user_professor.profile.name));
 	printf(" ▶ 학수번호	"); scanf_s("%s", lec.serial, sizeof(lec.serial));
 	printf(" ▶ 강의명	"); scanf_s("%s", lec.title, sizeof(lec.title));
-
-	//printf(" ▶ 교수명	"); scanf_s("%s", lec.professor, sizeof(lec.professor));
-	strncpy_s(lec.professor, sizeof(lec.professor), user_professor.profile.name, sizeof(user_professor.profile.name));
-
 	printf(" ▶ 학점	"); scanf_s("%d", &lec.point);
 	printf(" ▶ 시간	"); scanf_s("%s", lec.time, sizeof(lec.time));
 	printf(" ▶ 수강인원	"); scanf_s("%d", &lec.member);
 	return lec;
 }
+
+bool chk_lec_in_lecArr(LECTURE* lec) {
+	for (int i = 0; i < lec_num; i++) {
+		if (strcmp(lec_arr[i].serial, lec->serial) == 0) return false;
+	}return true;
+}
+
 void update_lecture() {
-	printf("〓〓〓〓〓 강의 수정 〓〓〓〓〓\n");
 
 	bool chk_find = false;
 	bool chk_update = false;
 
 	char num[20];
-	printf(" ▶ 학수번호 조회	"); scanf_s("%s", num, sizeof(num));
+	printf("\n\n ▶ 학수번호 조회  >>> "); scanf_s("%s", num, sizeof(num));
 	for (int i = 0; i < lec_num; i++) {
 		if (strncmp(lec_arr[i].serial, num, sizeof(lec_arr[i].serial)) == 0) {
 			chk_find = true;
@@ -251,24 +295,32 @@ void update_lecture() {
 	if (chk_find && chk_update) printf(" ※ 수정 완료 \n");
 	else printf(" ※ 자료를 찾지 못하였습니다. \n");
 }
+
 void do_update_lecture_info(LECTURE* lec) {
+	printf("\n〓〓〓〓〓 강의 수정 〓〓〓〓〓\n");
+
 	printf(" ▶ 학점	"); scanf_s("%d", &(lec->point));
 	printf(" ▶ 시간	"); scanf_s("%s", lec->time, sizeof(lec->time));
 	printf(" ▶ 수강인원	"); scanf_s("%d", &(lec->member));
 }
+
 void __main__Student() {
 	while (main_state) {
+		printf("\n▶ 사용자 : %s (%s) \n\n", user_student.profile.name, user_student.id);
+		rintf("%69s\n", "■■ 전체 과목 조회 ■■");
+
 		print_lec_list();
-		printf("	1 .		수강 조회\n	2 .		수강 신청\n	3 .		장바구니\n	4. 로그아웃 \n >>> ");
+		printf("	1 .		수강 신청\n	2 .		장바구니\n	3 .		로그아웃 \n >>> ");
 		scanf_s("%d", &cmd);
 		cmd_main_Student(cmd);
 		printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
 	}
 }
+
 void cmd_main_Student(int c) {
 	switch (c) {
 	case 1:
-		search_lecture_list();
+		//search_lecture_list();
 		break;
 
 	case 2:
@@ -276,24 +328,13 @@ void cmd_main_Student(int c) {
 		break;
 
 	case 3:
-		//
-		break;
-
-	case 4:
 		printf("◎ 로그아웃 \n");
 		main_state = false;
 		break;
+
 	default:
 		printf("명령어를 다시 입력해주세요.\n");
 	}
-}
-
-void print_format_lec_info(LECTURE lec) {
-	printf("%-20s%-10s%-20s%-10s%-5d%-20s%-5d\n", lec.major, lec.serial, lec.title, lec.professor, lec.point, lec.time, lec.member);
-}
-
-void search_lecture_list() {
-	for (int i = 0; i < lec_num; i++) print_format_lec_info(lec_arr[i]);
 }
 
 int main(void) {
