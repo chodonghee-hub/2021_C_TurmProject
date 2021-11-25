@@ -62,6 +62,7 @@ void print_format_lec_info(LECTURE);
 void search_lecture_list();
 void printFormat_lecture(LECTURE*);
 void print_lec_list();
+int is_my_lec_Professor(LECTURE*);
 
 void __init__() {
 	while (init_state) {
@@ -207,6 +208,10 @@ void print_lec_list() {
 	}printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n\n\n");
 }
 
+int is_my_lec_Professor(LECTURE* lec) {
+	return strcmp(user_professor.profile.name, lec->professor);
+}
+
 LECTURE upload_lecture_info() {
 	printf("〓〓〓〓〓 강의 등록 〓〓〓〓〓\n");
 	LECTURE lec = { 0 };
@@ -226,17 +231,25 @@ LECTURE upload_lecture_info() {
 }
 void update_lecture() {
 	printf("〓〓〓〓〓 강의 수정 〓〓〓〓〓\n");
+
+	bool chk_find = false;
 	bool chk_update = false;
-	int num;
-	printf(" ▶ 학수번호 조회	"); scanf_s("%d", &num);
+
+	char num[20];
+	printf(" ▶ 학수번호 조회	"); scanf_s("%s", num, sizeof(num));
 	for (int i = 0; i < lec_num; i++) {
-		if (num == i) {
-			do_update_lecture_info(lec_arr + num);
-			chk_update = true;
+		if (strncmp(lec_arr[i].serial, num, sizeof(lec_arr[i].serial)) == 0) {
+			chk_find = true;
+			if (is_my_lec_Professor(lec_arr + i) == 0) {
+				do_update_lecture_info(lec_arr + i);
+				chk_update = true;
+			}
+			else printf(" ※ 강의 수정 권한이 없습니다.\n");
+			break;
 		}
 	}
-	if (chk_update) printf("	※ 수정 완료 \n");
-	else printf("	※ 자료를 찾지 못하였습니다. \n");
+	if (chk_find && chk_update) printf(" ※ 수정 완료 \n");
+	else printf(" ※ 자료를 찾지 못하였습니다. \n");
 }
 void do_update_lecture_info(LECTURE* lec) {
 	printf(" ▶ 학점	"); scanf_s("%d", &(lec->point));
@@ -245,7 +258,7 @@ void do_update_lecture_info(LECTURE* lec) {
 }
 void __main__Student() {
 	while (main_state) {
-		printf("〓〓〓〓〓 수강신청 목록 〓〓〓〓〓\n");
+		print_lec_list();
 		printf("	1 .		수강 조회\n	2 .		수강 신청\n	3 .		장바구니\n	4. 로그아웃 \n >>> ");
 		scanf_s("%d", &cmd);
 		cmd_main_Student(cmd);
