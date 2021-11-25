@@ -49,16 +49,20 @@ int init_state = true;
 int main_state = false;
 int chk_login = false;
 int lec_num = 0;
+int is_my_lec_Professor(LECTURE*);
+int get_lecture_info(char[20]);
+int get_length_of(char[20]);
 bool state_in_res = false;
-STUDENT stu_arr[50] = { 0 };		// 학생 회원 목록
-PROFESSOR prof_arr[50] = { 0 };	// 교수 회원 목록
-LECTURE lec_arr[50] = { 0 };			// 과목 리스트 
-STUDENT* user_student = { 0 };			// 로그인시 학생 유저 
-PROFESSOR* user_professor = { 0 };	// 로그인시 교수 유저 
+STUDENT stu_arr[50] = { 0 };		
+STUDENT* user_student = { 0 };
+STUDENT signUp_info_student();
+PROFESSOR prof_arr[50] = { 0 };	
+PROFESSOR signUp_info_professor();
+PROFESSOR* user_professor = { 0 };
+LECTURE lec_arr[50] = { 0 };			
+LECTURE upload_lecture_info();
 void do_signUp_student();
 void do_signUp_professor();
-STUDENT signUp_info_student();
-PROFESSOR signUp_info_professor();
 void login_student(char*, char*);
 void login_professor(char*, char*);
 void select_cmd(int);
@@ -70,22 +74,18 @@ void cmd_main_Profesor(int);
 void update_lecture();
 void do_update_lecture_info(LECTURE*);
 void do_upload_lecture();
-int get_length_of(char[20]);
-LECTURE upload_lecture_info();
-void cmd_main_Student(int);
-void printFormat_lecture(LECTURE*);
-void print_lec_list();
-int is_my_lec_Professor(LECTURE*);
-bool chk_id_in_stuArr(char[20]);
-bool chk_id_in_profArr(char[20]);
-bool chk_lec_in_lecArr(char[20]);
-void do_select_lecture();
-bool chk_lec_in_mine(char[20]);
-int get_lecture_info(char[20]);
 void print_my_lecture_list();
 void __reservation__();
 void cmd_reservation(int);
 void cancel_lec_reservation();
+void do_select_lecture();
+void cmd_main_Student(int);
+void printFormat_lecture(LECTURE*);
+void print_lec_list();
+bool chk_id_in_stuArr(char[20]);
+bool chk_id_in_profArr(char[20]);
+bool chk_lec_in_lecArr(char[20]);
+bool chk_lec_in_mine(char[20]);
 
 void __init__() {
 	while (init_state) {
@@ -496,7 +496,7 @@ void print_my_lecture_list() {
 }
 
 int main(void) {
-	system("mode con cols=122 lines=30 | title 제목명");
+	system("mode con cols=122 lines=30 | title 불타는 수강 신청");
 	__init__();
 	return 0;
 }
