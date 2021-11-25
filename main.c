@@ -18,6 +18,7 @@ typedef struct Lecture_info {
 	char time[20];
 	int member;
 	double succuss_rate;
+	double cnt_res_person;
 }LECTURE;
 typedef struct Student_info {
 	char major[20];
@@ -25,7 +26,6 @@ typedef struct Student_info {
 	char pw[20];
 	int lecture_point;
 	PERSON profile;
-	LECTURE lecture_arr[10];		// 수강과목 배열
 	char lec_serial_arr[10][20];			// 수강과목 학수번호 목록 
 	int cnt_my_lec;
 }STUDENT;
@@ -73,7 +73,7 @@ bool chk_id_in_profArr(char[20]);
 bool chk_lec_in_lecArr(char[20]);
 void do_select_lecture();
 bool chk_lec_in_mine(char[20]);
-LECTURE get_lecture_info(char[20]);
+int get_lecture_info(char[20]);
 void print_my_lecture_list();
 void __reservation__();
 void cmd_reservation(int);
@@ -240,6 +240,8 @@ void cmd_main_Profesor(int c) {
 }
 
 void printForamt_lecture(LECTURE* lec) {
+	if (lec->member >= lec->cnt_res_person) lec->succuss_rate = 100;
+	else lec->succuss_rate = (lec->member / lec->cnt_res_person) * 100;
 	printf("%13s%15s%15s%10s%15d%10s%15d%20.f%s\n", lec->major, lec->serial, lec->title, lec->professor, lec->point, lec->time, lec->member, lec->succuss_rate, "%");
 }
 
@@ -351,6 +353,7 @@ void do_select_lecture() {
 	if (!chk_lec_in_lecArr(ent_serial)) {
 		if (chk_lec_in_mine(ent_serial)) {
 			strcpy_s(user_student.lec_serial_arr[user_student.cnt_my_lec], sizeof(ent_serial), ent_serial);
+			lec_arr[get_lecture_info(ent_serial)].cnt_res_person++;
 			printf("● 학수번호 : %s 추가 \n", user_student.lec_serial_arr[user_student.cnt_my_lec]);
 			user_student.cnt_my_lec++;
 		}
@@ -364,9 +367,9 @@ bool chk_lec_in_mine(char ent_serial[20]) {
 	return true;
 }
 
-LECTURE get_lecture_info(char serial[20]) {
+int get_lecture_info(char serial[20]) {
 	for (int i = 0; i < lec_num; i++) {
-		if (strncmp(lec_arr[i].serial, serial, sizeof(lec_arr[i])) == 0) return lec_arr[i];
+		if (strncmp(lec_arr[i].serial, serial, sizeof(lec_arr[i])) == 0) return i;
 	}
 }
 
@@ -403,7 +406,7 @@ void print_my_lecture_list() {
 	char tmp_serial[20];
 	for (int i = 0; i < user_student.cnt_my_lec; i++) {
 		strcpy_s(tmp_serial, sizeof(tmp_serial), user_student.lec_serial_arr[i]);
-		tmp_lec = get_lecture_info(tmp_serial);
+		tmp_lec = lec_arr[get_lecture_info(tmp_serial)];
 		printForamt_lecture(&tmp_lec);
 	}
 	printf("〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n");
