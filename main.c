@@ -63,6 +63,7 @@ void cmd_main_Profesor(int);
 void update_lecture();
 void do_update_lecture_info(LECTURE*);
 void do_upload_lecture();
+int get_length_of(char[20]);
 LECTURE upload_lecture_info();
 void cmd_main_Student(int);
 void printFormat_lecture(LECTURE*);
@@ -77,6 +78,7 @@ int get_lecture_info(char[20]);
 void print_my_lecture_list();
 void __reservation__();
 void cmd_reservation(int);
+void cancel_lec_reservation();
 
 void __init__() {
 	while (init_state) {
@@ -93,7 +95,7 @@ void select_cmd(int c) {
 	char ent_pw[40];
 	switch (c) {
 	case 1:
-		printf("▶ (1) 학생 회원가입		(2) 교수 회원가입\n >>>"); scanf_s("%d", &cmd);
+		printf("▶ (1) 학생 회원가입		(2) 교수 회원가입\n >>> "); scanf_s("%d", &cmd);
 		if (cmd == 1) do_signUp_student();
 		else if (cmd == 2) do_signUp_professor();
 		break;
@@ -272,6 +274,12 @@ LECTURE upload_lecture_info() {
 	strncpy_s(lec.major, sizeof(lec.major), user_professor.major, sizeof(user_professor.major));
 	strncpy_s(lec.professor, sizeof(lec.professor), user_professor.profile.name, sizeof(user_professor.profile.name));
 	printf(" ▶ 학수번호	"); scanf_s("%s", lec.serial, sizeof(lec.serial));
+
+	while (get_length_of(lec.serial) != 4) {
+		printf(" ▷ error : 학수번호 4자리를 입력해주세요	");
+		scanf_s("%s", lec.serial, sizeof(lec.serial));
+	}
+
 	printf(" ▶ 강의명	"); scanf_s("%s", lec.title, sizeof(lec.title));
 	printf(" ▶ 학점	"); scanf_s("%d", &lec.point);
 	printf(" ▶ 시간	"); scanf_s("%s", lec.time, sizeof(lec.time));
@@ -285,15 +293,27 @@ bool chk_lec_in_lecArr(char ent_serial[20]) {
 	}return true;
 }
 
+int get_length_of(char num[20]) {
+	int length = 0;
+	for (int i = 0; num[i] != '\0'; i++) length++;
+	return length;
+}
+
 void update_lecture() {
 
 	bool chk_find = false;
 	bool chk_update = false;
 
 	char num[20];
-	printf("\n\n ▶ 학수번호 조회  >>> "); scanf_s("%s", num, sizeof(num));
+	printf("\n\n ▶ 학수번호 조회 (4자리) >>> "); scanf_s("%s", num, sizeof(num));
+
+	while (get_length_of(num) != 4) {
+		printf(" ▷ error : 학수번호 4자리를 입력해주세요	");
+		scanf_s("%s", num, sizeof(num));
+	}
+
 	for (int i = 0; i < lec_num; i++) {
-		if (strncmp(lec_arr[i].serial, num, sizeof(lec_arr[i].serial)) == 0) {
+		if (strncmp(lec_arr[i].serial, num, 4) == 0) {
 			chk_find = true;
 			if (is_my_lec_Professor(lec_arr + i) == 0) {
 				do_update_lecture_info(lec_arr + i);
@@ -386,7 +406,7 @@ void __reservation__() {
 void cmd_reservation(int c) {
 	switch (c) {
 	case 1:
-		//
+		cancel_lec_reservation();
 		break;
 	case 2:
 		state_in_res = false;
@@ -395,6 +415,30 @@ void cmd_reservation(int c) {
 
 	default:
 		printf("※ 명령어를 다시 입력해주세요 \n");
+	}
+}
+
+void cancel_lec_reservation() {
+	printf("\n〓〓〓〓〓 예약 취소 〓〓〓〓〓\n");
+	char ent_serial[20];
+	int del_p = 0;
+	printf(" ▶ 취소할 학수번호를 입력해주세요 >>> "); scanf_s("%s", ent_serial, sizeof(ent_serial));
+	if (!chk_lec_in_mine(ent_serial)) {
+
+		lec_arr[get_lecture_info(ent_serial)].cnt_res_person--;
+
+		for (int i = 0; i < user_student.cnt_my_lec; i++) {
+			if (strcmp(user_student.lec_serial_arr[i], ent_serial) == 0) {
+				del_p = i;
+				break;
+			}
+		}
+		for (int i = del_p; i < user_student.cnt_my_lec; i++)
+			strcpy_s(user_student.lec_serial_arr[i], sizeof(user_student.lec_serial_arr[i + 1]), user_student.lec_serial_arr[i + 1]);
+
+		for (int i = 0; i < 4; i++)
+			user_student.lec_serial_arr[user_student.cnt_my_lec][i] = '\0';
+		user_student.cnt_my_lec--;
 	}
 }
 
